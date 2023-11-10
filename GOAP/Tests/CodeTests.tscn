@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://brckj164sabyy"]
+
+[ext_resource type="Script" path="res://GOAP/Tests/CodeTests.gd" id="1_34oeg"]
+
+[node name="CodeTests" type="Node"]
+script = ExtResource("1_34oeg")
