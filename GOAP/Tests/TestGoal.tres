@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="Goal" load_steps=2 format=3 uid="uid://dtiy00qhost52"]
+[gd_resource type="Resource" script_class="GoalGOAP" load_steps=2 format=3 uid="uid://dtiy00qhost52"]
 
 [ext_resource type="Script" path="res://GOAP/GoalGOAP.gd" id="1_ifx0v"]
 
