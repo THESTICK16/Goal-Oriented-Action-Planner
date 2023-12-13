@@ -4,16 +4,18 @@ extends Resource
 class_name Queue
 
 ## The Array containing the data for the Queue to pull from.
-var _data : Array : set = _private_setter, get = _private_getter
+var _data : Array #: set = _private_setter, get = _private_getter
 ## The maximum number of elements that can be added tp the Queue.
 ## if _max_size is <=0, size is unlimited. 
-var _max_size: int : set = _private_setter#, get = _private_getter
+var _max_size: int #: set = _private_setter#, get = _private_getter
 ## Determines wether to make additions faster than removals or vice-versa.
 ## If true the front of the Queue will be index 0 and removals will be slower, else the back of the array will be the front of the Queue and additions will be slower.
 var prioritize_additions : bool
 
-## Constructs a Queue based on "data". If nor data is provided, constructs an empty Queue.
+## Constructs a Queue based on "data". If no data is provided, constructs an empty Queue.
 ## @param data: existing data with which the Queue should be constructed.
+## @param max_size: The maximum number of objects to be stored in the Queue. If set to 0 or less, no limit will be imposed.
+## @param prioritize_additions: If true the front of the Queue will be index 0 and removals will be slower, else the back of the array will be the front of the Queue and additions will be slower.
 func _init(data=null, max_size:=0, prioritize_additions:=true):
 	if data != null:
 		_data = Array(data)
@@ -76,9 +78,14 @@ func clear() -> void:
 func is_full() -> bool:
 	return true if _data.size() >= _max_size else false
 	
+func _to_string():
+	return str(_data)
+	
+#region Private Setter/Getter. DO NOT USE. As of Godot 4.0 this method no longer works as intended.
 func _private_setter(new):
 	push_warning("You are attempting to access a private variable which cannot be accessed externally")
 
 
 func _private_getter():
 	push_warning("You are attempting to access a private variable which cannot be accessed externally")
+#endregion
