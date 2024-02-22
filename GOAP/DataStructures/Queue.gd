@@ -10,7 +10,7 @@ var _data : Array #: set = _private_setter, get = _private_getter
 var _max_size: int #: set = _private_setter#, get = _private_getter
 ## Determines wether to make additions faster than removals or vice-versa.
 ## If true the front of the Queue will be index 0 and removals will be slower, else the back of the array will be the front of the Queue and additions will be slower.
-var prioritize_additions : bool
+var prioritize_additions : bool : set = set_prioritize_additions
 
 ## Constructs a Queue based on "data". If no data is provided, constructs an empty Queue.
 ## @param data: existing data with which the Queue should be constructed.
@@ -29,10 +29,13 @@ func offer(item) -> bool:
 	if _max_size > 0 and _data.size() >= _max_size:
 		return false
 		
-#	if prioritize_additions: _data.push_back(item)
-#	else: _data.push_front(item)
-	_data.push_back(item) if prioritize_additions else _data.push_front(item)
-		
+	if prioritize_additions: _data.push_back(item)
+	else: _data.push_front(item)
+	#_data.push_back(item) if prioritize_additions else _data.push_front(item)
+	#if prioritize_additions:
+		#_data.push_back(item)
+	#else: 
+		#_data.push_front(item)
 	return true
 	
 ## Retrieves and removes the head of this queue, or returns null if this queue is empty.
@@ -80,6 +83,12 @@ func is_full() -> bool:
 	
 func _to_string():
 	return str(_data)
+	
+func _meta_data():
+	return ("Data: " + str(_data) + "\nMax Size: " + str(_max_size) + "\nPrioritize Additions: " + str(prioritize_additions))
+	
+func set_prioritize_additions(prioritize_addition: bool):
+	prioritize_additions = prioritize_addition
 	
 #region Private Setter/Getter. DO NOT USE. As of Godot 4.0 this method no longer works as intended.
 func _private_setter(new):
