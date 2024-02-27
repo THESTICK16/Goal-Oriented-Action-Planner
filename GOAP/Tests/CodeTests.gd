@@ -3,20 +3,9 @@ extends Node
 @onready var test_goal = preload("res://GOAP/Tests/TestGoal.tres")
 
 func _ready():
-	var queue_test = QueueTest.new()
-#	print(test_goal.is_valid())
-#	print(ternary_return_test(true))
-#	var base_class = BaseTestClass.new(20, "Lamonaise")
-#	var inherited_class = InheritedTestClass.new(10, "dipearious", true)
-	#test_callables()
-	#var array = [1,2,3,4,6,7,8,9]
-	#print(array)
-	#array.insert(4, 5)
-	#print(array)
-	#var q = PriorityQueue.new(array)
-	#for i in 10:
-		#q.offer(i)
-	#print(q)
+	#var unit_test = UnitTest.new().run_tests()
+	var queue_test = QueueTest.new().run_tests()
+
 
 
 func test_callables():
