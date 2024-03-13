@@ -1,6 +1,8 @@
 extends Resource
 class_name UnitTest
 
+signal test_finished
+
 ## The prefix with which all 'test' functions must begin with. 
 ## If a 'test' function name does not begin with this prefix it will not run.
 const TEST_FUNC_PREFIX = 'test_'
@@ -35,25 +37,31 @@ func run_tests():
 		
 		_test_passed = true
 		run_before_each()
-		call_deferred(meth_name)
+		call(meth_name)
 		run_after_each()
 		_tests_run += 1
-		_print_test_results(meth_name)
+		_establish_test_results(meth_name)
 		
 	run_after()
 	
-	print("---------------------------------------" + str(resource_path) + " Tests Complete-----------------------------------------------")
-	print("Tests Run: " + str(_tests_run) + "\nTests Passed: " + str(_pass_count) + "\nTests Failed: " + str(_failure_count))
+	print_rich("[b][color=cyan]---------------------------------------" + str(resource_path) + " Tests Complete----------------------------------------------[/color]")
+	print_rich(
+		"[b][color=white][b]Tests Run: " + str(_tests_run) + "[/b][/color]" + 
+		"\n[color=green][b]Tests Passed: " + str(_pass_count) + "[/b][/color]" + 
+		"\n[color=orange][b]Tests Failed: " + str(_failure_count) + "[/b][/color]")
+		
+	emit_signal("test_finished")
 
-func test(test : bool):
-	if not test:
+func test(test_ : bool):
+	if not test_:
 		#print("FAIL --> Test #: ", str(_tests_within_tests_run + 1), " FAILED ---------------------------------------------------------------------------------------")
 		#_failure_count += 1
 		_failures.append(str(_tests_within_tests_run + 1))
 		_test_passed = false
 		
-	else:
-		_pass_count += 1
+	#else:
+		#_pass_count += 1
+		
 	_tests_within_tests_run += 1
 	
 #func _set_tests_run(num_run: int):
@@ -61,16 +69,17 @@ func test(test : bool):
 	#_tests_within_tests_run = 1 # Resets the tests within the function to show which test is failing
 	#print("TEST " + str(_tests_run))
 	
-func _print_test_results(test_name):
+func _establish_test_results(test_name):
 	if _test_passed:
 		_pass_count += 1
-		print("Test: " + test_name + " PASSED")
+		print_rich("[color=green]Test: " + test_name + " PASSED[/color]")
 	else:
 		_failure_count += 1
-		print("Test: " + test_name + " FAILED")
+		print_rich("[color=orange]Test: " + test_name + " FAILED[/color]")
 		for failure in _failures:
-			print("--test call #" + str(failure) + " failed")
+			print_rich("[indent][i]--test call #" + str(failure) + " failed")
 	_failures.clear()
+	_tests_within_tests_run = 0
 
 # --------------------------------Virtual Functions-----------------------------------------
 

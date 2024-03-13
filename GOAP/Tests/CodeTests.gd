@@ -4,7 +4,9 @@ extends Node
 
 func _ready():
 	#var unit_test = UnitTest.new().run_tests()
-	var queue_test = QueueTest.new().run_tests()
+	var q_test = PriorityQueueTest.new()
+	q_test.run_tests()
+	
 
 
 

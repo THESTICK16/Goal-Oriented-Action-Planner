@@ -42,6 +42,6 @@ func get_desited_state():
 ## Determines if it is feasible for the given agent parameter to pursue the Goal
 ## @param agent: the "Agent" for which the validity of the Goal is to be determined
 ## @return true if the agent can and shoudl pursue the Goal, else false.
-func is_valid(agent: AgentGOAP) -> bool:
+func is_valid(_agent: AgentGOAP) -> bool:
 	push_error("\"is_valid\" returns false by default and must be overriden by all GoalGOAP resources")
 	return false

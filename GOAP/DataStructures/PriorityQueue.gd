@@ -12,7 +12,7 @@ var _comparator: Callable #: set = _private_setter, get = _private_getter # (May
 ## @param max_size: The maximum number of objects to be stored in the Queue. If set to 0 or less, no limit will be imposed.
 ## @param prioritize_additions: If true the front of the Queue will be index 0 and removals will be slower, else the back of the array will be the front of the Queue and additions will be slower.
 ## @param comparator: A callable (Lambda function) that establishes how the data objects will be sorted. _comparator should compare two objects to be sorted in the Queue and return 1 if the first object is greater, 0 if equal, and -1 if less than.
-func _init(data=null, max_size=0, comparator=null):
+func _init(data=null, max_size=-1, comparator=null):
 	super(data, max_size, false) # prioritize_additions is set to false by default to make the insert algorithm simpler (the head of the Queue will always be at the right side) and to make removal quicker (since additions will unpredictable but removal is always from the end)
 	if comparator != null:
 		_comparator = comparator
