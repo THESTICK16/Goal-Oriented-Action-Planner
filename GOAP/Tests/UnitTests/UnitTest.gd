@@ -25,7 +25,7 @@ var _test_passed := true
 var _failures := []
 
 
-func run_tests():
+func run_tests() -> bool:
 	run_before()
 	
 	for method in get_method_list():
@@ -45,12 +45,14 @@ func run_tests():
 	run_after()
 	
 	print_rich("[b][color=cyan]---------------------------------------" + str(resource_path) + " Tests Complete----------------------------------------------[/color]")
-	print_rich(
-		"[b][color=white][b]Tests Run: " + str(_tests_run) + "[/b][/color]" + 
-		"\n[color=green][b]Tests Passed: " + str(_pass_count) + "[/b][/color]" + 
-		"\n[color=orange][b]Tests Failed: " + str(_failure_count) + "[/b][/color]")
+	print_rich("[b][color=white][b]Tests Run: " + str(_tests_run) + "[/b][/color]")
+	print_rich("[color=green][b]Tests Passed: " + str(_pass_count) + "[/b][/color]")
+	if _failure_count > 0:
+		print_rich("[color=orange][b]Tests Failed: " + str(_failure_count) + "[/b][/color]")
+	print_rich("[b][color=cyan]-----------------------------------------------------------------------------------------------------")
 		
 	emit_signal("test_finished")
+	return _failure_count <= 0
 
 func test(test_ : bool):
 	if not test_:

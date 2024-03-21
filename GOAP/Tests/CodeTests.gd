@@ -4,6 +4,10 @@ extends Node
 
 func _ready():
 	#var unit_test = UnitTest.new().run_tests()
+	#for i in 100:
+		#var q_test = PriorityQueueTest.new()
+		#if not q_test.run_tests():
+			#push_error("Failed Test #", i)
 	var q_test = PriorityQueueTest.new()
 	q_test.run_tests()
 	
@@ -19,8 +23,9 @@ func test_callables():
 	print(result)
 	
 func compare_to(one, two): 
-	if one == two: return 0
-	return 1 if one > two else -1
+	return 1 if one > two else 0 if one == two else -1
+	#if one == two: return 0
+	#return 1 if one > two else -1
 
 func ternary_return_test(test_bool: bool):
 #	return 1 if test_bool else 0
