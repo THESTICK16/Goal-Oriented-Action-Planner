@@ -36,7 +36,7 @@ func run_before_each():
 			
 		)
 		
-	pq_cmp_to = PriorityQueue.new(cmptoitems)
+	pq_cmp_to = PriorityQueue.new()
 
 func test_offer():
 	
@@ -96,14 +96,16 @@ func test_comparators():
 		sort_by_shorter_string.offer(i)
 	
 	test(sort_by_longer_string.to_array()[0]._name == "q" and sort_by_longer_string.to_array()[6]._name == "rsTUVWxyz")
-	print(sort_by_longer_string)
-	test(sort_by_shorter_string.to_array()[6]._name == "q" and sort_by_longer_string.to_array()[0]._name == "rsTUVWxyz")
-	print(sort_by_shorter_string)
-	test(sort_by_shorter_string.to_array()[0]._name == "aBc" and sort_by_longer_string.to_array()[6]._name == "rsTUVWxyz")
-	print(sort_alphabetically)
+	#print("Sort by longer string: ", sort_by_longer_string)
+	test(sort_by_shorter_string.to_array()[6]._name == "q" and sort_by_shorter_string.to_array()[0]._name == "rsTUVWxyz")
+	#print("Sort by shorter string: ", sort_by_shorter_string)
+	test(sort_alphabetically.to_array()[0]._name == "aBc" and sort_alphabetically.to_array()[6]._name == "rsTUVWxyz")
+	#print("Sort  alphabetically: ", sort_alphabetically)
 
 func test_default_comparator():
-	pass
+	for i in cmptoitems:
+		pq_cmp_to.offer(i)
+	test(is_PQ_sorted_properly_with_pqs_comparator(pq_cmp_to))
 	
 func is_PQ_sorted_properly_with_pqs_comparator(_pq: PriorityQueue): # Test for PQs with th comparator tht sorts comparator_test_items by name length (longest at front of queue)
 	var last = _pq.to_array()[0]._name

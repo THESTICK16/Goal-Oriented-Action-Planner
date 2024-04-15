@@ -8,8 +8,11 @@ func _ready():
 		#var q_test = PriorityQueueTest.new()
 		#if not q_test.run_tests():
 			#push_error("Failed Test #", i)
-	var q_test = PriorityQueueTest.new()
-	q_test.run_tests()
+	#var q_test = PriorityQueueTest.new()
+	#q_test.run_tests()
+	#var stack_test = StackTest.new().run_tests()
+	var linked_list_test = LinkedListTest.new().run_tests()
+	#var q_test = QueueTest.new().run_tests()
 	
 
 

@@ -3,8 +3,14 @@ extends Resource
 ## A First-In-First-Out Queue.
 class_name Queue
 
+## Used to determine wha type of data structure the queue will use as a base
+## QUEUE_TYPE_ARRAY will use an Array and have faster access to any element in the queue, however either insertions or deletions will be slower due to cycling all other elements over.
+## QUEUE_TYPE_LINKED_LIST will use a Linked List and have constant insertion/deletion, but will take longer to access elements in the middle of the list due to having to cycle through each element to get there.
+## QUEUE_TYPE_LINKED_LIST will be set as the default
+#enum QUEUE_TYPE {QUEUE_TYPE_ARRAY, QUEUE_TYPE_LINKED_LIST} #TODO Actually implement this into Queue
+
 ## The Array containing the data for the Queue to pull from.
-var _data : Array #: set = _private_setter, get = _private_getter
+var _data #: set = _private_setter, get = _private_getter
 ## The maximum number of elements that can be added tp the Queue.
 ## if _max_size is <=0, size is unlimited. 
 var _max_size: int #: set = _private_setter#, get = _private_getter
@@ -16,7 +22,14 @@ var _prioritize_additions : bool
 ## @param data: existing data with which the Queue should be constructed.
 ## @param max_size: The maximum number of objects to be stored in the Queue. If set to 0 or less, no limit will be imposed.
 ## @param prioritize_additions: If true the front of the Queue will be index 0 and removals will be slower, else the back of the array will be the front of the Queue and additions will be slower.
-func _init(data=null, max_size:=-1, prioritize_additions:=true):
+func _init(data=null, max_size:=-1, prioritize_additions:=true): #, queue_type:QUEUE_TYPE=QUEUE_TYPE.QUEUE_TYPE_LINKED_LIST):
+	#match queue_type: #FIXME Array cannot take null as a constructor
+		#QUEUE_TYPE.QUEUE_TYPE_ARRAY:
+			#_data = Array(data)
+		#QUEUE_TYPE.QUEUE_TYPE_LINKED_LIST:
+			##_data = LinkedList.new(data) #FIXME once linked list has been implemented, uncomment this line and delete the one below
+			#_data = Array(data)
+	
 	if data != null:
 		_data = Array(data)
 	else:
@@ -77,6 +90,8 @@ func size() -> int:
 ## This array is a copy and modifying the Array order will not modify the queue order.
 ## Modifying Individual elements in the array accesed via reference (i.e. objects) will modify those in the queue as well.
 func to_array() -> Array:
+	#if _data is LinkedList:
+		#return _data.to_array()
 	return _data.duplicate()
 
 ## Removes all of the elements from this queue.
