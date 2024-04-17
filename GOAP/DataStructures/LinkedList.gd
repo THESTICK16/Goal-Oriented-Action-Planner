@@ -13,9 +13,8 @@ func _init(data=null):
 
 ##PRIVATE METHOD! NOT FOR EXTERNAL USE!
 ##Inserts value at the specified index in the list.
-##Assumes that checks for indexing have been made. Failure to perform checks beforehand may result in unusual behavior
 ## Returns OK if succesful, else returns an appropriate error code
-func __add(index: int, value: Variant) -> int:
+func __add(index: int, value: Variant) -> Error:
 	if index < 0 or index > _size:
 		push_error("Index ", index, " out of range for list of size ", _size)
 		return ERR_PARAMETER_RANGE_ERROR
@@ -32,8 +31,15 @@ func __add(index: int, value: Variant) -> int:
 			
 	if index == 0:
 		_head = ListNode.new(value, null, _head)
+		if _head.next != null:
+			_head.next.prev = _head
 		_size += 1
 		return OK
+		
+	#if index == size(): #FIXME IF want to make inserting at end of list instantaneous then implement this code properly. It is currently buggy
+		#var temp = _tail
+		#temp.next = ListNode.new(value, temp, null)
+		#_tail = temp.next
 		
 	var temp: ListNode = _head
 	for i in index - 1:
@@ -43,7 +49,10 @@ func __add(index: int, value: Variant) -> int:
 			push_error("Index ", index, " out of range for list of size ", _size)
 			return ERR_PARAMETER_RANGE_ERROR
 	
+	var offset_node = temp.next #Use this to set prev properly after adding the new node
 	temp.next = ListNode.new(value, temp, temp.next)
+	if offset_node != null:
+		offset_node.prev = temp.next
 	_size += 1
 	
 	while _tail.has_next():
@@ -53,9 +62,9 @@ func __add(index: int, value: Variant) -> int:
 
 ##PRIVATE METHOD! NOT FOR EXTERNAL USE!
 ##Removes and returns the value at the specified index in the list
-##Assumes that checks for indexing have been made. Failure to perform checks beforehand may result in unusual behavior
 ## Returns the value at index if succesful, else returns an appropriate error code
 func __remove(index: int) -> Variant:
+	var removed : Variant
 	if _head == null:
 		push_error("Cannot remove an element from an empty list")
 		return ERR_PARAMETER_RANGE_ERROR
@@ -65,15 +74,20 @@ func __remove(index: int) -> Variant:
 		return ERR_PARAMETER_RANGE_ERROR
 		
 	if index == 0:
+		removed = _head
 		_head = _head.next
+		if _head != null:
+			_head.prev = null
 		_size -= 1
-		return OK
+		return removed.data
 		
 	if index == _size - 1:
+		removed = _tail
 		_tail = _tail.prev
+		_tail
 		_tail.next = null
 		_size -= 1
-		return OK
+		return removed.data
 	
 	var temp: ListNode = _head
 	for i in index - 1:
@@ -82,42 +96,32 @@ func __remove(index: int) -> Variant:
 		else: 
 			push_error("Index ", index, " out of range for list of size ", _size)
 			return ERR_PARAMETER_RANGE_ERROR
-		
+	
+	removed = temp.next
 	temp.next = temp.next.next
+	temp.next.prev = temp
 	_size -= 1
 	
-	return OK
+	return removed.data
 
 ##Inserts a new element at a given position in the list. The position must be valid, or at the end of the list (pos == size()). Returns OK on success, or one of the other Error values if the operation failed.
 ##Note: This method acts in-place and doesn't return a modified list.
 ##Note: On large lists, this method will be slower if the inserted element is close to the end of the list (index 0). This is because all the list must be traversed to insert the new element.
 func insert(position: int, value: Variant) -> int:
-	#if index >= _size:
-		#return ERR_PARAMETER_RANGE_ERROR
-		#push_error("Index ", index, " out of bounds for list size ", _size)
-	#
-	#if index <= 0:
-		#_head = ListNode.new(item)
-		#_size += 1
-		#return true
-		#
-	#for i in index:
-		#pass
-	#
-		#
-	return false
+	return __add(position, value)
 
 ##Inserts all of the elements in the specified collection into this list, starting at the specified position.
-func add_all(collection, index:=-1) -> bool:
+##If no position is specified, the collection will be appended to the end
+func add_all(collection, position:=-1) -> bool:
 	return false
 
 ##Returns the first element of the list. Prints an error and returns null if the list is empty.
 func front() -> Variant:
-	return null
+	return get_item(0)
 
 ##Returns the last element of the list. Prints an error and returns null if the list is empty.
 func back() -> Variant:
-	return null
+	return get_item(_size - 1)
 	
 ##Appends the specified element to the end of this list.
 func append(value: Variant) -> bool:
@@ -150,6 +154,9 @@ func clear() -> void:
 	
 ##Returns true if this list is empty
 func is_empty() -> bool:
+	if _head == null:
+		return true
+	
 	return false
 
 ##Returns true if this list contains the specified element.
@@ -157,11 +164,39 @@ func has(value: Variant) -> bool:
 	return false
 
 ##Returns the element at the specified position in this list.
+##If negative, index is considered relative to the end of the list.
 func get_item(index: int) -> Variant:
-	return null
+	var position = index
+	if is_empty():
+		push_error("Cannot retrieve an element from an empty list")
+		return ERR_PARAMETER_RANGE_ERROR
+	
+	if index >= _size: # or index < 0:
+		push_error("Index ", index, " out of range for list of size ", _size)
+		return ERR_PARAMETER_RANGE_ERROR
+	
+	if index < 0:
+		if abs(index) > _size:
+			push_error("Index ", index, " out of range for list of size ", _size)
+			return ERR_PARAMETER_RANGE_ERROR
+		position = _size + index
+	
+	var temp = _head
+	for i in position:
+		temp = temp.next
+	
+	return temp.data
 	
 ##Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
+##Casts all values as Strings before equality comparison in order to compare unalike types
 func index_of(value: Variant) -> int:
+	var temp = _head
+	
+	for i in _size:
+		if str(temp.data) == str(value):
+			return i
+		temp = temp.next
+		
 	return -1
 	
 ##Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
@@ -173,10 +208,24 @@ func count(value: Variant) -> int:
 	return -1
 	
 ##Removes and returns the element of the list at index position. 
-##If negative, position is considered relative to the end of the list. 
-##Leaves the list untouched and returns null if the list is empty or if it's accessed out of bounds. An error message is printed when the list is accessed out of bounds, but not when the list is empty.
-func pop_at(position: int) -> Variant:
-	return null
+##If negative, index is considered relative to the end of the list. 
+##Leaves the list untouched and returns an error code if the list is empty or if it's accessed out of bounds. An error message is printed when the list is accessed out of bounds, but not when the list is empty.
+func pop_at(index: int) -> Variant:
+	if is_empty():
+		push_error("Cannot remove an element from an empty list")
+		return ERR_PARAMETER_RANGE_ERROR
+		
+	if index >= _size:
+		push_error("Index ", index, " out of range for list of size ", _size)
+		return ERR_PARAMETER_RANGE_ERROR
+	
+	if index < 0:
+		if abs(index) > _size:
+			push_error("Index ", index, " out of range for list of size ", _size)
+			return ERR_PARAMETER_RANGE_ERROR
+		return __remove(_size + index)
+		
+	return __remove(index)
 	
 ##Removes the first occurrence of the specified element in this list (when traversing the list from head to tail).
 func remove_first_occurence(item) -> bool:
@@ -206,6 +255,21 @@ func _to_string():
 		temp = temp.next
 		
 	list_string += str(temp) + "]"
+	
+	return list_string
+	
+func metadata():
+	var temp := _head
+	
+	if temp == null:
+		return "[]"
+		
+	var list_string: String = "["
+	while temp.has_next():
+		list_string += str(temp.metadata()) + ", "
+		temp = temp.next
+		
+	list_string += str(temp.metadata()) + "]"
 	
 	return list_string
 
@@ -267,3 +331,6 @@ class ListNode:
 		
 	func _to_string():
 		return str(data)
+		
+	func metadata():
+		return str("[Data: ", data, " Prev: ", prev, " Next: ", next, "]")
