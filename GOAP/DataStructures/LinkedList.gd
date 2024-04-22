@@ -84,7 +84,7 @@ func __remove(index: int) -> Variant:
 	if index == _size - 1:
 		removed = _tail
 		_tail = _tail.prev
-		_tail
+		#_tail
 		_tail.next = null
 		_size -= 1
 		return removed.data
@@ -113,37 +113,48 @@ func insert(position: int, value: Variant) -> int:
 ##Inserts all of the elements in the specified collection into this list, starting at the specified position.
 ##If no position is specified, the collection will be appended to the end
 func add_all(collection, position:=-1) -> bool:
+	push_warning("Method \'add_all\' not yet implemented in \'LinkedList\'")
 	return false
 
 ##Returns the first element of the list. Prints an error and returns null if the list is empty.
 func front() -> Variant:
+	if is_empty():
+		return null
 	return get_item(0)
 
 ##Returns the last element of the list. Prints an error and returns null if the list is empty.
 func back() -> Variant:
+	if is_empty():
+		return null
 	return get_item(_size - 1)
 	
 ##Appends the specified element to the end of this list.
-func append(value: Variant) -> bool:
+func append(value: Variant) -> int:
 	return push_back(value)
 	
 ##Inserts the specified element at the beginning of this list.
-func push_front(value: Variant) -> bool:
-	return false
+func push_front(value: Variant) -> int:
+	return insert(0, value)
 	
 ##Appends the specified element to the end of this list.
-func push_back(value: Variant) -> bool:
-	return false
+func push_back(value: Variant) -> int:
+	if is_empty():
+		return insert(0, value)
+	return insert(_size, value)
 
 ##Removes and returns the first element of the list. 
 ##Returns null if the list is empty, without printing an error message.
 func pop_front() -> Variant:
-	return null
+	if is_empty():
+		return null
+	return pop_at(0)
 
 ##Removes and returns the last element of the list. 
 ##Returns null if the list is empty, without printing an error message.
 func pop_back() -> Variant:
-	return null
+	if is_empty():
+		return null
+	return pop_at(_size - 1)
 
 	
 ##Removes all of the elements from this list.
@@ -160,7 +171,14 @@ func is_empty() -> bool:
 	return false
 
 ##Returns true if this list contains the specified element.
+##Casts all values as Strings before equality comparison in order to compare unalike types
 func has(value: Variant) -> bool:
+	var temp = _head
+	while temp != null:
+		if str(temp.data) == str(value):
+			return true
+		temp = temp.next
+			
 	return false
 
 ##Returns the element at the specified position in this list.
@@ -200,12 +218,29 @@ func index_of(value: Variant) -> int:
 	return -1
 	
 ##Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
+##Casts all values as Strings before equality comparison in order to compare unalike types
 func last_index_of(value: Variant) -> int:
+	var temp = _tail
+	
+	for i in range(_size - 1, -1, -1):
+		if str(temp.data) == str(value):
+			return i
+		temp = temp.prev
+	
 	return -1
 	
-##Returns the number of times an element is in the array.
+##Returns the number of times an element is in the list.
+##Casts all values as Strings before equality comparison in order to compare unalike types
 func count(value: Variant) -> int:
-	return -1
+	var num_occurence := 0
+	
+	var temp = _head
+	while temp != null:
+		if str(temp.data) == str(value):
+			num_occurence += 1
+		temp = temp.next
+	
+	return num_occurence
 	
 ##Removes and returns the element of the list at index position. 
 ##If negative, index is considered relative to the end of the list. 
@@ -228,12 +263,32 @@ func pop_at(index: int) -> Variant:
 	return __remove(index)
 	
 ##Removes the first occurrence of the specified element in this list (when traversing the list from head to tail).
-func remove_first_occurence(item) -> bool:
+##Casts all values as Strings before equality comparison in order to compare unalike types
+##Reuturns true if the item is found and deleted. Returns false if the item is not present in the list
+func remove_first_occurence(value: Variant) -> bool:
+	var temp = _head
+	for i in _size:
+		if str(temp.data) == str(value):
+			var _anti_warning_var = pop_at(i)
+			return true
+		temp = temp.next
+		
+	return false
+	
+func remove_last_occurence(value: Variant) -> bool:
+	var temp = _tail
+	
+	for i in range(_size - 1, -1, -1):
+		if str(temp.data) == str(value):
+			var _anti_warning_var = pop_at(i)
+			return true
+		temp = temp.prev
+		
 	return false
 	
 ##Replaces the element at the specified position in this list with the specified element.
-func set_index(item, index) -> bool:
-	return false
+func set_index(index: int, value: Variant) -> bool:
+	return false ## call pop_at on the index then insert on the index
 	
 ##Returns the number of elements in this list.
 func size() -> int:
