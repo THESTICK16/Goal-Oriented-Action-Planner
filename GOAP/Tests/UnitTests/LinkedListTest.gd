@@ -398,16 +398,73 @@ func test_remove_last_occurence():
 	test(ll2.back() != 9)
 	test(ll2.remove_last_occurence(5))
 	
-
-
-
+func test_set_index():
+	test(ll2.set_index(5, 20) == 5)
+	test(ll2.get_item(5) == 20)
+	test(ll2.size() == 10)
+	test(ll2.get_item(4) == 4)
+	test(ll2.get_item(6) == 6)
+	test(not ll2.has(5))
 	
-func test_to_string():
-	pass
+	test(ll2.set_index(0, "Apple") == 0)
+	test(ll2.get_item(0) == "Apple")
+	test(ll2.size() == 10)
+	test(ll2.get_item(1) == 1)
+	test(ll2._head.data == "Apple")
+	test(not ll2.has(0))
+	
+	test(ll2.set_index(9, 3.214) == 9)
+	test(ll2.get_item(9) == 3.214)
+	test(ll2.size() == 10)
+	test(ll2.get_item(8) == 8)
+	test(ll2._tail.data == 3.214)
+	test(not ll2.has(9))
+	
+	test(ll2.set_index(10, true) == null)
+	test(ll2.get_item(10) == true)
+	test(ll2.size() == 11)
+	test(ll2.get_item(9) == 3.214)
+	test(ll2._tail.data == true)
+	
+	test(ll.set_index(12, false) == ERR_PARAMETER_RANGE_ERROR)
+	test(ll.set_index(-1, false) == ERR_PARAMETER_RANGE_ERROR)
+	test(ll.set_index(1, false) == ERR_PARAMETER_RANGE_ERROR)
+	
+	test(ll.set_index(0, false) == null)
+	test(ll.size() == 1)
+	test(ll._head.data == false)
+	test(ll._tail.data == false)
+	
+func test_to_array():
+	var ll2_array_demo = [0,1,2,3,4,5,6,7,8,9]
+	var ll2_array = ll2.to_array()
+	for i in 10:
+		test(ll2_array[i] == ll2_array_demo[i])
 
-
-
-
+func test_iterator():
+	var target := 0 #The number that the current i should be set to
+	for i in ll2.iterator():
+		test(i == target)
+		target += 1
+		
+	var outer := [] #The outer loop array to catch the outer loop's iterator
+	var inner := [] #The inner loop array to catch the inner loop's iterator
+	var o_target := 0 #The number that the current i should be set to
+	var i_target := 0 #The number that the current j should be set to
+	for i in ll2.iterator():
+		test(i == o_target)
+		o_target += 1
+		i_target = 0
+		outer.append(i)
+		for j in ll2.iterator():
+			test(j == i_target)
+			i_target += 1
+			inner.append(j)
+		#print("Outer iteration ", i)
+	print("Outer: ", outer, "\nInner: ", inner)
+	
+	##TODO Test for non-zero start, non tail end, non 1 increment and other more thorough tests
+	test(false)
 
 func is_list_cohesive(l: LinkedList) -> bool:
 	var forward_list := []

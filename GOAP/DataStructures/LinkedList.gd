@@ -103,11 +103,35 @@ func __remove(index: int) -> Variant:
 	_size -= 1
 	
 	return removed.data
+	
+##PRIVATE METHOD! NOT FOR EXTERNAL USE!
+##Retrieves the node at index instead of the node data
+func __get_node(index: int) -> ListNode:
+	var position = index
+	if is_empty():
+		push_error("Cannot retrieve an element from an empty list")
+		return null
+	
+	if index >= _size: # or index < 0:
+		push_error("Index ", index, " out of range for list of size ", _size)
+		return null
+	
+	if index < 0:
+		if abs(index) > _size:
+			push_error("Index ", index, " out of range for list of size ", _size)
+			return null
+		position = _size + index
+	
+	var temp = _head
+	for i in position:
+		temp = temp.next
+	
+	return temp
 
 ##Inserts a new element at a given position in the list. The position must be valid, or at the end of the list (pos == size()). Returns OK on success, or one of the other Error values if the operation failed.
 ##Note: This method acts in-place and doesn't return a modified list.
 ##Note: On large lists, this method will be slower if the inserted element is close to the end of the list (index 0). This is because all the list must be traversed to insert the new element.
-func insert(position: int, value: Variant) -> int:
+func insert(position: int, value: Variant) -> Error:
 	return __add(position, value)
 
 ##Inserts all of the elements in the specified collection into this list, starting at the specified position.
@@ -287,8 +311,21 @@ func remove_last_occurence(value: Variant) -> bool:
 	return false
 	
 ##Replaces the element at the specified position in this list with the specified element.
-func set_index(index: int, value: Variant) -> bool:
-	return false ## call pop_at on the index then insert on the index
+##Returns the replaced element or null if setting an empty index.
+func set_index(index: int, value: Variant) -> Variant:
+	if index > _size or index < 0:
+		push_error("Index ", index, " out of range for list of size ", _size)
+		return ERR_PARAMETER_RANGE_ERROR
+		
+	var replaced = null
+	if not is_empty() and index < _size:
+		replaced = pop_at(index)
+		
+	var insert_report = insert(index, value)
+	if insert_report == OK:
+		return replaced
+	
+	return insert_report
 	
 ##Returns the number of elements in this list.
 func size() -> int:
@@ -296,7 +333,14 @@ func size() -> int:
 	
 ##Returns an array containing all of the elements in this list in proper sequence (from first to last element).
 func to_array() -> Array:
-	return []
+	var list_2_array = []
+	
+	var temp = _head
+	while temp != null:
+		list_2_array.append(temp.data)
+		temp = temp.next
+	
+	return list_2_array
 
 func _to_string():
 	var temp := _head
@@ -328,45 +372,34 @@ func metadata():
 	
 	return list_string
 
+##Creates and returns an iterator for the current List
+##Due to retrieving the iterator via method call, the List can be nested in for loops multiple times
+##Parameters start_index, stop_index, and increment function similarly to the "range()" function and will determine where the iterator starts, stops and by how much it increases each pass
+func iterator(start_index:=0, stop_index:=_size, increment:=1) -> Iterator:
+	if is_empty() or start_index < 0 or stop_index < 0 or start_index >= _size or stop_index > _size:
+		push_error("start_index ", start_index, "or stop_index: ", stop_index, " out of range for list of size ", _size)
+		return null
+	
+	var end_iter = null if stop_index == _size else __get_node(stop_index)
+	return Iterator.new(__get_node(start_index), end_iter, increment)
 
-#TODO Below
-#You can create custom iterators in case the default ones don't quite meet your needs by overriding the Variant class's _iter_init, _iter_next, and _iter_get functions in your script. An example implementation of a forward iterator follows:
+###The current node in the iterator
+#var _iter_current: ListNode
+###@OVERRIDE
+#func _iter_init(_arg):
+	#_iter_current = _head
+	#return _iter_current != null
 #
-#class ForwardIterator:
-	#var start
-	#var current
-	#var end
-	#var increment
+###@OVERRIDE
+#func _iter_next(_arg):
+	##if _iter_current == null:
+		##return 
+	#_iter_current = _iter_current.next
+	#return _iter_current != null
 #
-	#func _init(start, stop, increment):
-		#self.start = start
-		#self.current = start
-		#self.end = stop
-		#self.increment = increment
-#
-	#func should_continue():
-		#return (current < end)
-#
-	#func _iter_init(arg):
-		#current = start
-		#return should_continue()
-#
-	#func _iter_next(arg):
-		#current += increment
-		#return should_continue()
-#
-	#func _iter_get(arg):
-		#return current
-#
-#And it can be used like any other iterator:
-#
-#var itr = ForwardIterator.new(0, 6, 2)
-#for i in itr:
-	#print(i) # Will print 0, 2, and 4.
-#
-#Make sure to reset the state of the iterator in _iter_init, otherwise nested for-loops that use custom iterators will not work as expected.
-
-
+###@OVERRIDE	
+#func _iter_get(_arg):
+	#return _iter_current.data
 
 class ListNode:
 	var data : Variant
@@ -389,3 +422,36 @@ class ListNode:
 		
 	func metadata():
 		return str("[Data: ", data, " Prev: ", prev, " Next: ", next, "]")
+		
+class Iterator:
+	##The current node in the iterator
+	var _iter_current: ListNode
+	##The head of the list/starting point for the iterator
+	var _head: ListNode
+	##The stopping point for the iterator (exclusive)
+	var _tail: ListNode
+	##The amount by which the iterator will increment each pass
+	var _increment: int
+	
+	func _init(head: ListNode, tail: ListNode, increment):
+		_head = head
+		_tail = tail
+		_increment = increment
+	
+	##@OVERRIDE
+	func _iter_init(_arg):
+		_iter_current = _head
+		return _iter_current != _tail
+
+	##@OVERRIDE
+	func _iter_next(_arg):
+		for i in _increment:
+			if _iter_current != null:
+				_iter_current = _iter_current.next
+				
+		return _iter_current != _tail
+
+	##@OVERRIDE	
+	func _iter_get(_arg):
+		return _iter_current.data
+	
