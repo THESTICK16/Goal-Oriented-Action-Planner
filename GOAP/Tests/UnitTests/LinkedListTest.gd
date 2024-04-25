@@ -14,9 +14,6 @@ func run_before_each():
 func run_after_each():
 	test(is_list_cohesive(ll))
 	test(is_list_cohesive(ll2))
-
-func test_constructor():
-	pass
 	
 func test_add():
 	for i in 10:
@@ -53,9 +50,7 @@ func test_add():
 	
 	test(ll.size() == 19)
 	test(is_list_cohesive(ll))
-	
-	#print(ll)
-	
+
 func test_remove():
 	test(ERR_PARAMETER_RANGE_ERROR == ll.__remove(0))
 	test(ERR_PARAMETER_RANGE_ERROR == ll.__remove(1))
@@ -131,8 +126,32 @@ func test_insert():
 	test(is_list_cohesive(ll))
 	
 func test_add_all():
-	pass
+	for i in range(10, 20):
+		ll.append(i)
+	test(ll.add_all(ll2) == OK)
+	test(ll.size() == 20)
+	test(ll.get_item(0) == 10)
+	test(ll.get_item(10) == 0)
+	test(ll.get_item(19) == 9)
+	test(is_list_cohesive(ll))
 	
+	ll.clear()
+	for i in range(10, 20):
+		ll.append(i)
+	test(ll.add_all(ll2, 5) == OK)
+	test(ll.size() == 20)
+	test(ll.get_item(0) == 10)
+	test(ll.get_item(4) == 14)
+	test(ll.get_item(5) == 0)
+	test(ll.get_item(14) == 9)
+	test(ll.get_item(19) == 19)
+	test(is_list_cohesive(ll))
+	
+	test(ERR_INVALID_PARAMETER == ll.add_all(true))
+	test(ERR_INVALID_PARAMETER == ll.add_all(Resource.new()))
+	test(ERR_INVALID_PARAMETER == ll.add_all(5))
+	test(ERR_INVALID_PARAMETER == ll.add_all("true"))
+
 func test_front():
 	test(ll.front() == null)
 	for i in 10:
@@ -461,10 +480,55 @@ func test_iterator():
 			i_target += 1
 			inner.append(j)
 		#print("Outer iteration ", i)
-	print("Outer: ", outer, "\nInner: ", inner)
+	#print("Outer: ", outer, "\nInner: ", inner)
 	
-	##TODO Test for non-zero start, non tail end, non 1 increment and other more thorough tests
-	test(false)
+	for i in ll2.iterator(3, 7):
+		test(i >= 3 and i < 7)
+	
+	for i in ll2.iterator(0, ll2.size(), 2):
+		test(i % 2 == 0)
+	
+	target = 9 #The number that the current i should be set to
+	for i in ll2.iterator(ll2.size() - 1, -1, -1):
+		test(i == target)
+		target -= 1
+	test(target == -1) #Ensures that the full list has been traversed all the way back to _head
+		
+	test(ll.iterator()._iter_current == null)
+	test(ll2.iterator(-1, ll2.size())._iter_current == null)
+	test(ll2.iterator(0, ll2.size() + 1)._iter_current == null)
+	test(ll2.iterator(50, ll2.size())._iter_current == null)
+	test(ll2.iterator(0, -2)._iter_current == null)
+	
+	for i in ll2.iterator(0, ll2.size(), 5):
+		test(i == 0 or i == 5)
+	target = 3 #The number of times the following iterator should loop
+	for i in ll2.iterator(ll2.size() - 1, -1, -3):
+		test(i % 3 == 0)
+		target -= 1
+	test(target == -1)
+	for i in ll2.iterator(ll2.size() - 3, 3, -1):
+		test(i <= 7 and i > 3)
+		
+func test_array_to_linked_list():
+	var array := [0,1,2,3,4,5,6,7,8,9]
+	var list_from_array = LinkedList.array_to_linked_list(array)
+	test(list_from_array is LinkedList)
+	test(list_from_array.get_item(0) == 0)
+	test(list_from_array.get_item(9) == 9)
+	test(is_list_cohesive(list_from_array))
+	test(ll2.equals(list_from_array))
+
+func test_equals():
+	test(not ll.equals(ll2))
+	for i in 10:
+		ll.append(i)
+	
+	test(ll.equals(ll2))
+	test(ll2.equals(ll))
+	
+	ll.append("Hojo")
+	test(not ll.equals(ll2))
 
 func is_list_cohesive(l: LinkedList) -> bool:
 	var forward_list := []
@@ -492,7 +556,5 @@ func is_list_cohesive(l: LinkedList) -> bool:
 	for i in forward_list.size():
 		if forward_list[i] != backward_list[i]:
 			return false
-			
-		
-		
+	
 	return true

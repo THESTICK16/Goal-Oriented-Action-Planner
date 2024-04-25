@@ -1,15 +1,15 @@
 extends Resource
 
+##
 class_name LinkedList # TODO Implement all the same methods as a Godot Array has, that way they can be used interchangably without changing method calls (at least as close as possible)
 
 var _head : ListNode
-var _tail : ListNode #TODO Implement this into the __add and __remove methods to make sure the tail is tracked properly
+var _tail : ListNode
 var _size : int = 0
 
 func _init(data=null):
 	if data != null:
-		for i in data:
-			pass #TODO Create a new list node one by one and add to the list (i.e. just call "add(i)"
+		add_all(data)
 
 ##PRIVATE METHOD! NOT FOR EXTERNAL USE!
 ##Inserts value at the specified index in the list.
@@ -135,10 +135,30 @@ func insert(position: int, value: Variant) -> Error:
 	return __add(position, value)
 
 ##Inserts all of the elements in the specified collection into this list, starting at the specified position.
-##If no position is specified, the collection will be appended to the end
-func add_all(collection, position:=-1) -> bool:
-	push_warning("Method \'add_all\' not yet implemented in \'LinkedList\'")
-	return false
+##If no position is specified or the position is negative, the collection will be appended to the end
+##'Collection must be of type Array or LinkedList
+##Returns Error code OK if successful, else the appropriate error code
+func add_all(collection, position:=-1) -> Error:
+	var additions: LinkedList #To contain the elements that will be added to this list
+	
+	if collection is Array:
+		additions = LinkedList.array_to_linked_list(collection)
+	
+	elif collection is LinkedList:
+		additions = collection
+	
+	else:
+		push_error("Error: parameter \'collection\' is of type ", type_string(typeof(collection)), ". Must be of type Array or LinkedList")
+		return ERR_INVALID_PARAMETER
+		
+	if additions.is_empty():
+		return OK
+	
+	var index: int = position if position <= _size and position >= 0 else _size
+	for i in additions.iterator():
+		insert(index, additions.get_item(i))
+		index += 1
+	return OK
 
 ##Returns the first element of the list. Prints an error and returns null if the list is empty.
 func front() -> Variant:
@@ -375,31 +395,46 @@ func metadata():
 ##Creates and returns an iterator for the current List
 ##Due to retrieving the iterator via method call, the List can be nested in for loops multiple times
 ##Parameters start_index, stop_index, and increment function similarly to the "range()" function and will determine where the iterator starts, stops and by how much it increases each pass
-func iterator(start_index:=0, stop_index:=_size, increment:=1) -> Iterator:
-	if is_empty() or start_index < 0 or stop_index < 0 or start_index >= _size or stop_index > _size:
-		push_error("start_index ", start_index, "or stop_index: ", stop_index, " out of range for list of size ", _size)
-		return null
-	
-	var end_iter = null if stop_index == _size else __get_node(stop_index)
-	return Iterator.new(__get_node(start_index), end_iter, increment)
+##start_index is inclusive, stop index is exclusive
+func iterator(start_index:=0, stop_index:=_size, increment:=1) -> LinkedListIterator:
+	#if is_empty() or start_index < 0 or stop_index < 0 or start_index >= _size or stop_index > _size:
+		#push_error("start_index ", start_index, " or stop_index: ", stop_index, " out of range for list of size ", _size)
+		#return LinkedListIterator.empty_iterator()
+		#
+	#if increment < 0 and stop_index == _size: #This catches the case where someone wants to iterate the list in reverse, but starts at LinkedList.size(), which is out of range for the list
+		#push_error("start_index ", start_index, "or stop_index: ", stop_index, " out of range for list of size ", _size)
+		#return LinkedListIterator.empty_iterator()
+	#
+	#var end_iter
+	#if (stop_index == _size and increment >= 0) or (stop_index < 0 and increment < 0):
+		#end_iter = null 
+	##elif stop_index == 0 and increment < 0:
+		##end_iter = null
+	#else:
+		#end_iter = __get_node(stop_index) #If stop_index is size (assuming forward traversal) that means the user wants to traverse to the end of the list inclusively, therefore the iterator should be told to stop when it reaches null
+	var end_iter: ListNode
+	if increment >= 0:
+			end_iter = null if stop_index >= _size else __get_node(stop_index)
+	else:
+		end_iter = null if stop_index < 0 else __get_node(stop_index)
+	return LinkedListIterator.new(__get_node(start_index), end_iter, increment)
 
-###The current node in the iterator
-#var _iter_current: ListNode
-###@OVERRIDE
-#func _iter_init(_arg):
-	#_iter_current = _head
-	#return _iter_current != null
-#
-###@OVERRIDE
-#func _iter_next(_arg):
-	##if _iter_current == null:
-		##return 
-	#_iter_current = _iter_current.next
-	#return _iter_current != null
-#
-###@OVERRIDE	
-#func _iter_get(_arg):
-	#return _iter_current.data
+##Compares if the elements in the list are equal to the elements in 'to' and returns true if so
+func equals(to: LinkedList) -> bool:
+	if size() != to.size():
+		return false
+	for i in size():
+		if get_item(i) != to.get_item(i):
+			return false
+	
+	return true
+	
+static func array_to_linked_list(array: Array) -> LinkedList:
+	var new_list = LinkedList.new()
+	for i in array:
+		new_list.append(i)
+		
+	return new_list
 
 class ListNode:
 	var data : Variant
@@ -423,7 +458,7 @@ class ListNode:
 	func metadata():
 		return str("[Data: ", data, " Prev: ", prev, " Next: ", next, "]")
 		
-class Iterator:
+class LinkedListIterator:
 	##The current node in the iterator
 	var _iter_current: ListNode
 	##The head of the list/starting point for the iterator
@@ -436,22 +471,43 @@ class Iterator:
 	func _init(head: ListNode, tail: ListNode, increment):
 		_head = head
 		_tail = tail
-		_increment = increment
+		_increment = increment if increment != 0 else 1
 	
 	##@OVERRIDE
 	func _iter_init(_arg):
 		_iter_current = _head
-		return _iter_current != _tail
+		return iter_should_continue()
 
 	##@OVERRIDE
 	func _iter_next(_arg):
-		for i in _increment:
-			if _iter_current != null:
-				_iter_current = _iter_current.next
+		if _increment < 0:
+			for i in abs(_increment):
+				if _iter_current != null:
+					_iter_current = _iter_current.prev
+		
+		else:
+			for i in _increment:
+				if _iter_current != null:
+					_iter_current = _iter_current.next
 				
-		return _iter_current != _tail
+		return iter_should_continue()
 
 	##@OVERRIDE	
 	func _iter_get(_arg):
 		return _iter_current.data
 	
+	##Returns true if the iterator has not finished iterating, false if it has.
+	func iter_should_continue() -> bool:
+		if _iter_current == null:
+			return false
+
+		return _iter_current != _tail
+		
+	static func empty_iterator() -> LinkedListIterator:
+		var empty_node = ListNode.new()
+		var empty_iter = LinkedListIterator.new(empty_node, empty_node, 1)
+		empty_iter._iter_current = null
+		return empty_iter
+		
+	func _to_string():
+		return str("Start: ", _head, ", End: ", _tail, ", Increment: ", _increment, ", Current: ", _iter_current)

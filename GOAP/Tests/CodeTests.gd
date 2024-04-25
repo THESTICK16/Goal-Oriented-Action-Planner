@@ -68,31 +68,31 @@ class InheritedTestClass extends BaseTestClass:
 	func _to_string():
 		return str(test_var_1) + " " + str(test_var_2 + " " + str(test_var_3))
 
-class FwdIterator:
-	var start
-	var curr
-	var end
-	var increment
-
-	func _init(start, stop, inc):
-		self.start = start
-		self.curr = start
-		self.end = stop
-		self.increment = inc
-
-	func is_done():
-		return (curr < end)
-
-	func do_step():
-		curr += increment
-		return is_done()
-
-	func _iter_init(arg):
-		curr = start
-		return is_done()
-
-	func _iter_next(arg):
-		return do_step()
-
-	func _iter_get(arg):
-		return curr
+#class FwdIterator:
+	#var start
+	#var curr
+	#var end
+	#var increment
+#
+	#func _init(start, stop, inc):
+		#self.start = start
+		#self.curr = start
+		#self.end = stop
+		#self.increment = inc
+#
+	#func is_done():
+		#return (curr < end)
+#
+	#func do_step():
+		#curr += increment
+		#return is_done()
+#
+	#func _iter_init(arg):
+		#curr = start
+		#return is_done()
+#
+	#func _iter_next(arg):
+		#return do_step()
+#
+	#func _iter_get(arg):
+		#return curr
