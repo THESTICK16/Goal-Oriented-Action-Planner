@@ -89,6 +89,13 @@ func test_remove():
 	
 	test(ll.size() == 0)
 	
+func test_get_node():
+	for i in range(10, (randi() % 100)):
+		ll2.append(i)
+	for i in ll2.size():
+		test((ll2.__get_node(i).data == i))
+		print(ll2.__get_node(i), " ", i)
+	
 func test_insert():
 	for i in 10:
 		ll.insert(i, i)

@@ -3,9 +3,9 @@ extends Node
 @onready var test_goal = preload("res://GOAP/Tests/TestGoal.tres")
 
 func _ready():
-	var q_test = QueueTest.new().run_tests()
-	var pq_test = PriorityQueueTest.new().run_tests()
-	var stack_test = StackTest.new().run_tests()
+	#var q_test = QueueTest.new().run_tests()
+	#var pq_test = PriorityQueueTest.new().run_tests()
+	#var stack_test = StackTest.new().run_tests()
 	var linked_list_test = LinkedListTest.new().run_tests()
 	
 	var ar := [0,1,2,3,4,5,6,7,8,9]

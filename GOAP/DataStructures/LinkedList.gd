@@ -40,15 +40,20 @@ func __add(index: int, value: Variant) -> Error:
 		#var temp = _tail
 		#temp.next = ListNode.new(value, temp, null)
 		#_tail = temp.next
-		
-	var temp: ListNode = _head
-	for i in index - 1:
-		if temp.has_next():
-			temp = temp.next
-		else: 
-			push_error("Index ", index, " out of range for list of size ", _size)
-			return ERR_PARAMETER_RANGE_ERROR
 	
+	#var temp: ListNode = _head
+	#for i in index - 1:
+		#if temp.has_next():
+			#temp = temp.next
+		#else: 
+			#push_error("Index ", index, " out of range for list of size ", _size)
+			#return ERR_PARAMETER_RANGE_ERROR
+	
+	var temp = __get_node(index - 1)
+	if temp == null:
+		push_error("Index ", index, " out of range for list of size ", _size)
+		return ERR_PARAMETER_RANGE_ERROR
+		
 	var offset_node = temp.next #Use this to set prev properly after adding the new node
 	temp.next = ListNode.new(value, temp, temp.next)
 	if offset_node != null:
@@ -89,13 +94,18 @@ func __remove(index: int) -> Variant:
 		_size -= 1
 		return removed.data
 	
-	var temp: ListNode = _head
-	for i in index - 1:
-		if temp.has_next():
-			temp = temp.next
-		else: 
-			push_error("Index ", index, " out of range for list of size ", _size)
-			return ERR_PARAMETER_RANGE_ERROR
+	#var temp: ListNode = _head
+	#for i in index - 1:
+		#if temp.has_next():
+			#temp = temp.next
+		#else: 
+			#push_error("Index ", index, " out of range for list of size ", _size)
+			#return ERR_PARAMETER_RANGE_ERROR
+	
+	var temp = __get_node(index - 1)
+	if temp == null:
+		push_error("Index ", index, " out of range for list of size ", _size)
+		return ERR_PARAMETER_RANGE_ERROR
 	
 	removed = temp.next
 	temp.next = temp.next.next
@@ -103,30 +113,65 @@ func __remove(index: int) -> Variant:
 	_size -= 1
 	
 	return removed.data
-	
+
 ##PRIVATE METHOD! NOT FOR EXTERNAL USE!
 ##Retrieves the node at index instead of the node data
+##Index must be a positive integer less than _size
 func __get_node(index: int) -> ListNode:
-	var position = index
 	if is_empty():
 		push_error("Cannot retrieve an element from an empty list")
 		return null
 	
-	if index >= _size: # or index < 0:
+	if index >= _size or index < 0:
 		push_error("Index ", index, " out of range for list of size ", _size)
 		return null
 	
-	if index < 0:
-		if abs(index) > _size:
-			push_error("Index ", index, " out of range for list of size ", _size)
-			return null
-		position = _size + index
+	var traverse_forward: bool = index < (_size / 2)
+	var temp: ListNode
 	
-	var temp = _head
-	for i in position:
-		temp = temp.next
+	if traverse_forward:
+		temp = _head
+		for i in index:
+			if temp.has_next():
+				temp = temp.next
+			else: 
+				push_error("Index ", index, " out of range for list of size ", _size)
+				return null
+	
+	else:
+		temp = _tail
+		for i in (_size - index) - 1:
+			if temp.has_prev():
+				temp = temp.prev
+			else:
+				push_error("Index ", index, " out of range for list of size ", _size)
+				return null
 	
 	return temp
+
+###PRIVATE METHOD! NOT FOR EXTERNAL USE!
+###Retrieves the node at index instead of the node data
+#func __get_node(index: int) -> ListNode:
+	#var position = index
+	#if is_empty():
+		#push_error("Cannot retrieve an element from an empty list")
+		#return null
+	#
+	#if index >= _size: # or index < 0:
+		#push_error("Index ", index, " out of range for list of size ", _size)
+		#return null
+	#
+	#if index < 0:
+		#if abs(index) > _size:
+			#push_error("Index ", index, " out of range for list of size ", _size)
+			#return null
+		#position = _size + index
+	#
+	#var temp = _head
+	#for i in position:
+		#temp = temp.next
+	#
+	#return temp
 
 ##Inserts a new element at a given position in the list. The position must be valid, or at the end of the list (pos == size()). Returns OK on success, or one of the other Error values if the operation failed.
 ##Note: This method acts in-place and doesn't return a modified list.
@@ -243,16 +288,18 @@ func get_item(index: int) -> Variant:
 			return ERR_PARAMETER_RANGE_ERROR
 		position = _size + index
 	
-	var temp = _head
-	for i in position:
-		temp = temp.next
+	#var temp = _head
+	#for i in position:
+		#temp = temp.next
+	#
+	#return temp.data
 	
-	return temp.data
+	return __get_node(position).data
 	
-func _get(property): #FIXME Either find a way to override [] notation to accept an int or fix the lines in priority queue that use [] notation
-	if property.is_valid_int():
-		return get_item(property.to_int())
-	return super.get(property)
+#func _get(property): #FIXME Either find a way to override [] notation to accept an int or fix the lines in priority queue that use [] notation
+	#if property.is_valid_int():
+		#return get_item(property.to_int())
+	#return super.get(property)
 	
 ##Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
 ##Casts all values as Strings before equality comparison in order to compare unalike types
