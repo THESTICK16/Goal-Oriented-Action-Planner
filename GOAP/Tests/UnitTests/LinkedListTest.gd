@@ -24,9 +24,9 @@ func test_add():
 	test(ll.to_string() == "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]")
 	
 	ll.__add(5, 'five')
-	test(ll.to_string() == "[0, 1, 2, 3, 4, five, 5, 6, 7, 8, 9]")
+	test(ll.to_string() == "[0, 1, 2, 3, 4, \"five\", 5, 6, 7, 8, 9]")
 	ll.__add(7, 100)
-	test(ll.to_string() == "[0, 1, 2, 3, 4, five, 5, 100, 6, 7, 8, 9]")
+	test(ll.to_string() == "[0, 1, 2, 3, 4, \"five\", 5, 100, 6, 7, 8, 9]")
 
 	test(ERR_PARAMETER_RANGE_ERROR == int(ll.__add(ll.size() + 1, "blue")))
 	test(ERR_PARAMETER_RANGE_ERROR == int(ll.__add(-1, "blue")))
@@ -98,9 +98,9 @@ func test_insert():
 	test(ll.to_string() == "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]")
 	
 	ll.insert(5, 'five')
-	test(ll.to_string() == "[0, 1, 2, 3, 4, five, 5, 6, 7, 8, 9]")
+	test(ll.to_string() == "[0, 1, 2, 3, 4, \"five\", 5, 6, 7, 8, 9]")
 	ll.insert(7, 100)
-	test(ll.to_string() == "[0, 1, 2, 3, 4, five, 5, 100, 6, 7, 8, 9]")
+	test(ll.to_string() == "[0, 1, 2, 3, 4, \"five\", 5, 100, 6, 7, 8, 9]")
 
 	test(ERR_PARAMETER_RANGE_ERROR == int(ll.insert(ll.size() + 1, "blue")))
 	test(ERR_PARAMETER_RANGE_ERROR == int(ll.insert(-1, "blue")))

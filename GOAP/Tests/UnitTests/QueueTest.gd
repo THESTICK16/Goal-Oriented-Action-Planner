@@ -112,6 +112,7 @@ func test_to_string():
 	var new_q = Queue.new([1, "test", false, 3.342], 5, false)
 	var test_string = str([1, "test", false, 3.342]) #"Data: " + str([1, "test", false, 3.342]) + "\nMax Size: " + str(5) + "\nPrioritize Additions: " + str(false)
 	var q_string = new_q._to_string()
+	print(q_string, "\n", test_string)
 	test(q_string == test_string)
 	
 func test_set_prioritize_additions():

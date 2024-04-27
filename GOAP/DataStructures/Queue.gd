@@ -31,9 +31,9 @@ func _init(data=null, max_size:=-1, prioritize_additions:=true): #, queue_type:Q
 			#_data = Array(data)
 	
 	if data != null:
-		_data = Array(data)
+		_data = LinkedList.new(Array(data))
 	else:
-		_data = Array()
+		_data = LinkedList.new() #Array()
 		
 	if max_size > 0 and max_size < _data.size():
 		push_warning("\'max_size\' must be greater than or equal to the initial data's size. \'max_size\' will be set to \'data.size()\'")
@@ -91,12 +91,12 @@ func size() -> int:
 ## Modifying Individual elements in the array accesed via reference (i.e. objects) will modify those in the queue as well.
 func to_array() -> Array:
 	#if _data is LinkedList:
-		#return _data.to_array()
+	return _data.to_array()
 	return _data.duplicate()
 
 ## Removes all of the elements from this queue.
 func clear() -> void:
-	#_data = []
+	#_data =[]
 	_data.clear()
 
 ## Returns true if the Queue is at maximum capacity, false if additions can still be made.

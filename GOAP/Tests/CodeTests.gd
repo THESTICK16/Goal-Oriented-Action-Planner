@@ -3,22 +3,19 @@ extends Node
 @onready var test_goal = preload("res://GOAP/Tests/TestGoal.tres")
 
 func _ready():
-	#var unit_test = UnitTest.new().run_tests()
-	#for i in 100:
-		#var q_test = PriorityQueueTest.new()
-		#if not q_test.run_tests():
-			#push_error("Failed Test #", i)
-	#var q_test = PriorityQueueTest.new()
-	#q_test.run_tests()
-	#var stack_test = StackTest.new().run_tests()
+	var q_test = QueueTest.new().run_tests()
+	var pq_test = PriorityQueueTest.new().run_tests()
+	var stack_test = StackTest.new().run_tests()
 	var linked_list_test = LinkedListTest.new().run_tests()
-	#var iter_test = FwdIterator.new(0, 10, 1)
-	#for i in iter_test:
-		#print("O: ", i)
-		#for j in iter_test:
-			#pass
-			#print("I: ", j)
 	
+	var ar := [0,1,2,3,4,5,6,7,8,9]
+	#ar.get(3)
+	
+	
+	#var ll = LinkedList.new()
+	#for i in 10:
+		#ll.append(i)
+	#print(ll["3"])
 
 
 

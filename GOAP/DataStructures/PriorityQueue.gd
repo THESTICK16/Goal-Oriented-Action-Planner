@@ -42,8 +42,10 @@ func binary_search_insert(item) -> bool:
 	while left <= right:
 		#var mid : int = left + (right - 1) / 2
 		var mid: int = (left + right) / 2
+		#var mid_value = _data.get_item(mid) if _data is LinkedList else _data[mid] #The value stored in _data at index mid. This variable is neccessary because LinkedList and Array cannot access data via the same means.
 		
-		var comparison : int = _comparator.call(item, _data[mid]) # if the item is greater than object at mid (returns 1) it must be inserted somewhere to the right of mid, and left if it is smaller (returns -1).
+		#var comparison : int = _comparator.call(item, mid_value)
+		var comparison : int = _comparator.call(item, _get_item_from_data(mid)) #if the item is greater than object at mid (returns 1) it must be inserted somewhere to the right of mid, and left if it is smaller (returns -1).
 		match comparison:
 			0:
 				#if mid - 1 >= 0:
@@ -53,14 +55,14 @@ func binary_search_insert(item) -> bool:
 				return true
 			
 			1: 
-				if mid + 1 >= _data.size() or _comparator.call(item, _data[mid + 1]) <= 0:
+				if mid + 1 >= _data.size() or _comparator.call(item, _get_item_from_data(mid + 1)) <= 0:
 					_data.insert(mid + 1, item)
 					return true
 				else:
 					left = mid + 1
 				
 			-1: 
-				if mid <= 0 or _comparator.call(item, _data[mid - 1]) > 0:
+				if mid <= 0 or _comparator.call(item, _get_item_from_data(mid - 1)) > 0:
 					#if mid == 0:
 						#_data.insert(mid, item)
 					#else:
@@ -72,6 +74,11 @@ func binary_search_insert(item) -> bool:
 					right = mid - 1
 				
 	return false
+
+##PRIVATE METHOD
+##Retrieves the item at teh specified index from data regardless if it is a LinkedList or an Array
+func _get_item_from_data(index: int) -> Variant:
+	return _data.get_item(index) if _data is LinkedList else _data[index]
 
 ## Private Method
 ## Determines if the item can be inserted into the Priority Queue based on max_size and inserts it if able

@@ -156,7 +156,7 @@ func add_all(collection, position:=-1) -> Error:
 	
 	var index: int = position if position <= _size and position >= 0 else _size
 	for i in additions.iterator():
-		insert(index, additions.get_item(i))
+		insert(index, i) #additions.get_item(i))
 		index += 1
 	return OK
 
@@ -248,6 +248,11 @@ func get_item(index: int) -> Variant:
 		temp = temp.next
 	
 	return temp.data
+	
+func _get(property): #FIXME Either find a way to override [] notation to accept an int or fix the lines in priority queue that use [] notation
+	if property.is_valid_int():
+		return get_item(property.to_int())
+	return super.get(property)
 	
 ##Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
 ##Casts all values as Strings before equality comparison in order to compare unalike types
@@ -453,6 +458,8 @@ class ListNode:
 		return prev != null
 		
 	func _to_string():
+		if data is String:
+			return  "\"" + str(data) + "\""
 		return str(data)
 		
 	func metadata():

@@ -5,7 +5,7 @@ extends Resource
 class_name GoalGOAP
 
 ## A dictionary of world state vriables and values that represent a "completed" state for this goal
-@export var desired_state: Dictionary : get = get_desited_state
+@export var desired_state: Dictionary : get = get_desired_state
 
 @export_group("Priority")
 ## The highest value that can be retrieved from this priority. 
@@ -35,7 +35,7 @@ func get_priority():
 func set_priority_ceiling(new_ceiling: int):
 	priority_ceiling = clampi(new_ceiling, MIN_PRIORITY, MAX_PRIORITY)
 	
-func get_desited_state():
+func get_desired_state():
 	return desired_state.duplicate(true)
 	
 ## VIRTUAL METHOD
