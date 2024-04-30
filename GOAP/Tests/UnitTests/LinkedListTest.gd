@@ -94,7 +94,7 @@ func test_get_node():
 		ll2.append(i)
 	for i in ll2.size():
 		test((ll2.__get_node(i).data == i))
-		print(ll2.__get_node(i), " ", i)
+		#print(ll2.__get_node(i), " ", i)
 	
 func test_insert():
 	for i in 10:
@@ -516,6 +516,9 @@ func test_iterator():
 	test(target == -1)
 	for i in ll2.iterator(ll2.size() - 3, 3, -1):
 		test(i <= 7 and i > 3)
+		
+	for i in LinkedList.LinkedListIterator.empty_iterator():
+		test(false)
 		
 func test_array_to_linked_list():
 	var array := [0,1,2,3,4,5,6,7,8,9]

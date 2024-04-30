@@ -460,11 +460,14 @@ func iterator(start_index:=0, stop_index:=_size, increment:=1) -> LinkedListIter
 	#var end_iter
 	#if (stop_index == _size and increment >= 0) or (stop_index < 0 and increment < 0):
 		#end_iter = null 
-	##elif stop_index == 0 and increment < 0:
-		##end_iter = null
+	#elif stop_index == 0 and increment < 0:
+		#end_iter = null
 	#else:
 		#end_iter = __get_node(stop_index) #If stop_index is size (assuming forward traversal) that means the user wants to traverse to the end of the list inclusively, therefore the iterator should be told to stop when it reaches null
 	var end_iter: ListNode
+	if (start_index > stop_index and increment >= 0) or (start_index < stop_index and increment < 0): #This catches the case where the provided start value is already beyond the stop value. (.i.e. traversing from 8 to 5)
+		return LinkedListIterator.empty_iterator()
+		
 	if increment >= 0:
 			end_iter = null if stop_index >= _size else __get_node(stop_index)
 	else:
@@ -558,8 +561,8 @@ class LinkedListIterator:
 		return _iter_current != _tail
 		
 	static func empty_iterator() -> LinkedListIterator:
-		var empty_node = ListNode.new()
-		var empty_iter = LinkedListIterator.new(empty_node, empty_node, 1)
+		#var empty_node = ListNode.new()
+		var empty_iter = LinkedListIterator.new(null, null, 1)
 		empty_iter._iter_current = null
 		return empty_iter
 		

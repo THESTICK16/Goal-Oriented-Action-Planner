@@ -10,7 +10,7 @@ class_name ActionGOAP
 @export var action_effects: Dictionary : get = get_action_effects
 ## The cost for the agent to perform this action. 
 ## To enable dynamic cost generation at runtime, the "get_cost" function should be overridden.
-@export var cost: float
+@export var cost: float : get = get_cost
 
 ## VIRTUAL METHOD.
 ## Determines if it is feasible for the given agent parameter to perform the Action
@@ -37,7 +37,7 @@ func get_action_effects() -> Dictionary:
 
 ## VIRTUAL METHOD.
 ## A basic getter for an actions's "cost".
-## This function is intended to be overriden for dynamic cost determination.
+## This function is intended to be overriden for dynamic cost calculation.
 ## @return the cost for the Agent to perform the action
 func get_cost() -> float:
 	return cost
