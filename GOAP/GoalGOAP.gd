@@ -29,13 +29,13 @@ func set_priority(new_priority: int):
 ## A basic getter for a goal's "priority".
 ## This function is intended to be overriden for dynamic priority determination.
 ## All get_priority overrides should remember to check that priority does not fall out of the bounds of MIN_PRIORITY<->priority_ceiling/MAX_PRIORITY
-func get_priority():
+func get_priority() -> int:
 	return clampi(priority, MIN_PRIORITY, priority_ceiling)
 	
 func set_priority_ceiling(new_ceiling: int):
 	priority_ceiling = clampi(new_ceiling, MIN_PRIORITY, MAX_PRIORITY)
 	
-func get_desired_state():
+func get_desired_state() -> Dictionary:
 	return desired_state.duplicate(true)
 	
 ## VIRTUAL METHOD
@@ -45,3 +45,11 @@ func get_desired_state():
 func is_valid(_agent: AgentGOAP) -> bool:
 	push_error("\"is_valid\" returns false by default and must be overriden by all GoalGOAP resources")
 	return false
+	
+func is_achieved() -> bool:
+	var achieved = true
+	#for state in desired_state:
+		#if desired_state.get(state) != world_state.get(state): #TODO  gain access to the world state and check against it. Then uncomment this for loop block
+			#achieved = false
+	push_error("\"is_achieved has not yet been implemented in GoalGoap\" ")
+	return achieved

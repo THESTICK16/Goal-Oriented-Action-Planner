@@ -1,15 +1,20 @@
 extends Node
 
-@onready var test_goal = preload("res://GOAP/Tests/TestGoal.tres")
+@onready var test_goal = preload("res://Tests/TestGoal.tres")
 
 func _ready():
 	#var q_test = QueueTest.new().run_tests()
 	#var pq_test = PriorityQueueTest.new().run_tests()
 	#var stack_test = StackTest.new().run_tests()
-	var linked_list_test = LinkedListTest.new().run_tests()
+	#var linked_list_test = LinkedListTest.new().run_tests()
 	
 	var ar := [0,1,2,3,4,5,6,7,8,9]
 	#ar.get(3)
+	
+	var agent = AgentGOAP.new()
+	print(agent.agent)
+	agent.agent = CharacterBody2D.new()
+	print(agent.agent)
 	
 	
 	#var ll = LinkedList.new()

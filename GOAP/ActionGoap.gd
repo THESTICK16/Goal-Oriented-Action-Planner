@@ -23,8 +23,9 @@ func is_valid(agent: AgentGOAP) -> bool:
 ## VIRTUAL METHOD.
 ## Contains the logic for performing the action, called on every loop.
 ## @param agent: the "Agent" that will be performing the action. Agent functions should be called directly in "perform_action".
+## @param _delta: The delta time variable used in process/physics_process
 ## @return true upon completion of the action, false while the action is still being performed
-func perform_action(agent: AgentGOAP) -> bool: # func perform_action(agent: AgentGOAP, behavior: Callable) -> bool:
+func perform_action(agent, _delta: float) -> bool: # func perform_action(agent: AgentGOAP, behavior: Callable) -> bool:
 	# TODO An alternative implementation could involve passing all virtual methods like this function a lambda function, thereby eliminating the need to override these functions and create a new script for every single action/goal/etc.
 	push_error("\"perform_action\" returns false by default and must be overriden by all ActionGOAP resources")
 	return false
@@ -41,3 +42,11 @@ func get_action_effects() -> Dictionary:
 ## @return the cost for the Agent to perform the action
 func get_cost() -> float:
 	return cost
+
+## VIRTUAL METHOD.
+## Determines if the action has been completed and returns true if so
+## This function is designed to be overriden for each individual action
+## @return true if the criteria for completing the action has been achieved, else false
+func is_complete() -> bool:
+	push_error("\"is_complete\" returns false by default and must be overriden by all ActionGOAP resources")
+	return false
