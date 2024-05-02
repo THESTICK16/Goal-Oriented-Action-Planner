@@ -17,16 +17,17 @@ var _current_plan_action: int
 
 func _physics_process(delta):
 	if _goals.is_empty():
+		push_warning("GOAP agent has been initialized without goals")
 		return
 	
 	var best_goal = get_highest_priority_goal()
 	if _current_goal != best_goal:
 		_current_goal = best_goal
-		_current_plan = get_new_plan()
+		_current_plan = get_new_plan(_current_goal)
 		_current_plan_action = 0
 		
 	if _current_plan[_current_plan_action].is_complete():
-		set_step()
+		set_step() #TEST Possibly need to add a check here to make sure that the next step has also not been completed by another agent. (i.e. not performing another step that is already completed too)
 	
 	_current_plan[_current_plan_action].perform_action(agent, delta)
 
@@ -40,9 +41,8 @@ func get_highest_priority_goal() -> GoalGOAP:
 	
 	return best_goal
 
-func get_new_plan() -> Array:
-	#return goap.get_plan(_current_goal) #TODO implement proper methods in GOAP and planner and uncomment
-	return []
+func get_new_plan(goal: GoalGOAP) -> Array:
+	return GOAP.planner.generate_plan(goal, self)
 
 ##Checks if the current step of the plan has been completed and increments it if so
 func set_step():

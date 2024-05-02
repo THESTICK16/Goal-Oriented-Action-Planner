@@ -12,6 +12,10 @@ class_name ActionGOAP
 ## To enable dynamic cost generation at runtime, the "get_cost" function should be overridden.
 @export var cost: float : get = get_cost
 
+### The cost + heuristic for use in the planner's A* algorithm
+### Updated and set by the calc_cost_plus_heuristic method, which should only be called externally
+#var a_star_total_cost: int
+
 ## VIRTUAL METHOD.
 ## Determines if it is feasible for the given agent parameter to perform the Action
 ## @param agent: the "Agent" for which the validity of the Goal is to be determined
@@ -35,6 +39,20 @@ func get_action_preconditions() -> Dictionary:
 	
 func get_action_effects() -> Dictionary:
 	return action_effects.duplicate(true)
+
+#func calc_cost_plus_heuristic(goal: GoalGOAP, current_state: Dictionary) -> void:
+	#var heuristic := 0
+	#
+	#for effect in action_effects:
+		#current_state[effect] = action_effects.get(effect)
+	#
+	#var desired_state = goal.get_desired_state()
+	#for state in desired_state:
+		#if desired_state.get(state) != current_state.get(desired_state):
+			#heuristic += 1
+	#
+	#a_star_total_cost = get_cost() + heuristic
+	#push_warning("calc_cost_plus_heuristic has not been properly tested yet")
 
 ## VIRTUAL METHOD.
 ## A basic getter for an actions's "cost".

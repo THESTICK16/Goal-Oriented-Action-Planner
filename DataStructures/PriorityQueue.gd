@@ -3,16 +3,20 @@ extends Queue
 ## A Queue that is sorted in order of a user establsihed priotity
 class_name PriorityQueue
 
+enum QUEUE_TYPE {COMPARATOR, KEY}
+
 ## A callable (Lambda function) that establishes how the data objects will be sorted. 
 ## _comparator should compare two objects to be sorted in the Queue and return 1 if the first object is greater, 0 if equal, and -1 if less than.
 var _comparator: Callable #: set = _private_setter, get = _private_getter # (Maybe) Create a new class called Comparator and change this from callable to comparator. See Java Docs for details
+
+var _queue_type: QUEUE_TYPE
 
 ## Constructs a Queue based on "data". If no data is provided, constructs an empty Queue.
 ## @param data: existing data with which the Queue should be constructed.
 ## @param max_size: The maximum number of objects to be stored in the Queue. If set to 0 or less, no limit will be imposed.
 ## @param prioritize_additions: If true the front of the Queue will be index 0 and removals will be slower, else the back of the array will be the front of the Queue and additions will be slower.
 ## @param comparator: A callable (Lambda function) that establishes how the data objects will be sorted. _comparator should compare two objects to be sorted in the Queue and return 1 if the first object is greater, 0 if equal, and -1 if less than.
-func _init(data=null, comparator=null): # max_size=-1, comparator=null):
+func _init(data=null, comparator=null, queue_type:QUEUE_TYPE=QUEUE_TYPE.COMPARATOR): # max_size=-1, comparator=null):
 	super(data, false) # max_size, false) # prioritize_additions is set to false by default to make the insert algorithm simpler (the head of the Queue will always be at the right side) and to make removal quicker (since additions will unpredictable but removal is always from the end)
 	if comparator != null:
 		_comparator = comparator
@@ -24,7 +28,7 @@ func _init(data=null, comparator=null): # max_size=-1, comparator=null):
 ## Determines where the item belongs in the Queue and inserts it.
 ## @param item: the item being inserted into the PriorityQueue.
 ## @return True if the item is succesfully inserted, else false
-func offer(item) -> bool:
+func offer(item, key:float=0) -> bool:
 	# The front of every PriorityQueue is considered to be the right side (i.e. highest priority goes to the right side of the queue)
 	if _data.is_empty(): 
 		_data.push_front(item)
@@ -75,6 +79,13 @@ func binary_search_insert(item) -> bool:
 				
 	return false
 
+## Determines where the item belongs in the Queue and inserts it.
+## @param item: the item being inserted into the PriorityQueue.
+## @param key: the key by which comparison to other items will be made
+## @return True if the item is succesfully inserted, else false
+#func binary_search_insert_with_key(item, key: int):
+	#pass
+
 ##PRIVATE METHOD
 ##Retrieves the item at teh specified index from data regardless if it is a LinkedList or an Array
 func _get_item_from_data(index: int) -> Variant:
@@ -104,6 +115,9 @@ func default_comparator(item1: Object, item2: Object) -> int:
 		#return -1
 	#if item1 == item2:
 		#return 0
+
+#func compare_keys(key1: float, key2: float):
+	#if key1 >
 
 
 
